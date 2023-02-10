@@ -20,6 +20,7 @@
           (irregex-match-substring   regexp-match-submatch)
           (irregex-match-start-index regexp-match-submatch-start)
           (irregex-match-end-index   regexp-match-submatch-end)
+          (irregex-match-num-submatches regexp-match-count)  ; ?
           ))
 
 (export regexp regexp? regexp-matches regexp-match? regexp-search
