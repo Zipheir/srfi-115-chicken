@@ -2,6 +2,7 @@
   ()
 
 (import scheme
+        (chicken base)
         (chicken module))
 
 (import (rename (chicken irregex)
@@ -30,11 +31,22 @@
         regexp-match-submatch-end regex-matches?
         )
 
-(export rx)
+(export rx regexp-match->list)
 
 (define-syntax rx
   (syntax-rules ()
     ((rx sre ...)
      (regexp (quote (: sre ...))))))
+
+(define (regexp-match->list rxm)
+  (letrec*
+   ((end (+ 1 (regexp-match-count rxm)))
+    (build
+     (lambda (k)
+       (if (= k end)
+           '()
+           (cons (regexp-match-submatch rxm k)
+                 (build (+ k 1)))))))
+    (build 0)))
 
 )
