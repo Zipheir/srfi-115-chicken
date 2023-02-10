@@ -1,7 +1,8 @@
 (module srfi-115
   ()
 
-(import (chicken module))
+(import scheme
+        (chicken module))
 
 (import (rename (chicken irregex)
           (sre->irregex              regexp)
@@ -19,6 +20,13 @@
           (irregex-match-substring   regexp-match-submatch)
           (irregex-match-start-index regexp-match-submatch-start)
           (irregex-match-end-index   regexp-match-submatch-end)
-          )
+          ))
+
+(export regexp regexp? regexp-matches regexp-match? regexp-search
+        regexp-fold regexp-extract regexp-split regexp-replace
+        regexp-replace-all regexp-match? regexp-match-count
+        regexp-match-submatch regexp-match-submatch-start
+        regexp-match-submatch-end
+        )
 
 )
