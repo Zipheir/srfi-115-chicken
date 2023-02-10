@@ -29,4 +29,11 @@
         regexp-match-submatch-end regex-matches?
         )
 
+(export rx)
+
+(define-syntax rx
+  (syntax-rules ()
+    ((rx sre ...)
+     (regexp (quote (: sre ...))))))
+
 )
