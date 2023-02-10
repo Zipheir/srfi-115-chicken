@@ -28,7 +28,7 @@
         regexp-fold regexp-extract regexp-split regexp-replace
         regexp-replace-all regexp-match? regexp-match-count
         regexp-match-submatch regexp-match-submatch-start
-        regexp-match-submatch-end regex-matches?
+        regexp-match-submatch-end regexp-matches?
         )
 
 (export rx regexp-match->list)
