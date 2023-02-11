@@ -3,7 +3,9 @@
 
 (import scheme
         (chicken base)
-        (chicken module))
+        (chicken module)
+        (only (srfi 14) char-set->string)
+        )
 
 (import (rename (chicken irregex)
           (sre->irregex              regexp)
@@ -48,5 +50,8 @@
            (cons (regexp-match-submatch rxm k)
                  (build (+ k 1)))))))
     (build 0)))
+
+(define (char-set->sre cset)
+  (list (char-set->string cset)))
 
 )
