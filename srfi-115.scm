@@ -7,8 +7,9 @@
         (only (srfi 14) char-set->string)
         )
 
+(import (only (chicken irregex) sre->irregex))
+
 (import (rename (chicken irregex)
-          (sre->irregex              regexp)
           (irregex?                  regexp?)
           (irregex-match             regexp-matches)
           (irregex-match?            regexp-matches?)
@@ -53,5 +54,41 @@
 
 (define (char-set->sre cset)
   (list (char-set->string cset)))
+
+;; Translate things with an equivalent in (chicken irregex) and
+;; raise errors for others.
+(define (translate-char-set-or-boundary sym)
+  (case sym
+    ((symbol) '("$+<=>^`|~"))  ; ASCII only
+    ((word) '(word+ any))
+    ((bog eog)
+     (error 'regexp "'bog' and 'eog' aren't supported"))
+    ((grapheme)
+     (error 'regexp "'grapheme' isn't supported"))
+    (else sym)))
+
+(define (translate-pair sre)
+  (let* ((a (car sre))
+         (d (cdr sre))
+         (sres (map translate-sre d)))
+    (case a
+      ((|)            `(or ,@sres))
+      ((optional)     `(? ,@sres))  ; SRFI 115 long names
+      ((zero-or-more) `(* ,@sres))
+      ((one-or-more)  `(+ ,@sres))
+      ((exactly)      `(= ,@sres))
+      ((at-least)     `(>= ,@sres))
+      ((repeated)     `(** ,@sres))
+      ((->)           `(=> ,@sres)) ; different arrow!
+      ((char-set)     sres)
+      (else           (cons a sres))))))
+
+;; Translates a SRFI 115 SRE to an SRE compatible with CHICKEN's
+;; irregex library.
+(define (translate-sre sre)
+  (cond ((or (string? sre) (char? sre)) sre)
+        ((symbol? sre) (translate-char-set-or-boundary sre))
+        ((pair? sre) (translate-pair sre))
+        (else (error 'regexp "invalid SRE object" sre))))
 
 )
