@@ -80,6 +80,10 @@
       ((-> ,sym . ,ss)        `(=> ,sym ,@(tlist ss))) ; different arrow!
       ((char-set ,s)          `(,s))
       ((w/ascii . ,ss)        `(: ,@(tlist ss)))
+      ((non-greedy-optional . ,ss) `(?? ,@(tlist ss)))
+      ((non-greedy-zero-or-more . ,ss) `(*? ,@(tlist ss)))
+      ((non-greedy-repeated ,m ,n . ,ss)
+       `(**? ,m ,n ,@(tlist ss)))
       ((,a . ,d)
        (if (memv a unsupported)
            (error 'regexp "unsupported form" a)
