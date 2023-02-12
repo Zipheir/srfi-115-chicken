@@ -1,5 +1,10 @@
 (module srfi-115
-  ()
+  (regexp regexp? regexp-matches regexp-match? regexp-search
+   regexp-fold regexp-extract regexp-split regexp-replace
+   regexp-replace-all regexp-match? regexp-match-count
+   regexp-match-submatch regexp-match-submatch-start
+   regexp-match-submatch-end regexp-matches?
+   rx regexp-match->list)
 
 (import scheme
         (chicken base)
@@ -26,15 +31,6 @@
           (irregex-match-end-index   regexp-match-submatch-end)
           (irregex-match-num-submatches regexp-match-count)  ; ?
           ))
-
-(export regexp regexp? regexp-matches regexp-match? regexp-search
-        regexp-fold regexp-extract regexp-split regexp-replace
-        regexp-replace-all regexp-match? regexp-match-count
-        regexp-match-submatch regexp-match-submatch-start
-        regexp-match-submatch-end regexp-matches?
-        )
-
-(export rx regexp-match->list)
 
 (include "pmatch.scm")
 
