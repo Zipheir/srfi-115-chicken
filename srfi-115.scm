@@ -4,7 +4,7 @@
    regexp-replace-all regexp-match? regexp-match-count
    regexp-match-submatch regexp-match-submatch-start
    regexp-match-submatch-end regexp-matches?
-   rx regexp-match->list)
+   rx regexp-match->list translate-sre)
 
 (import scheme
         (chicken base)
@@ -53,48 +53,40 @@
 (define (char-set->sre cset)
   (list (char-set->string cset)))
 
-;; Translate things with an equivalent in (chicken irregex) and
-;; raise errors for others.
-(define (translate-char-set-or-boundary sym)
-  (case sym
-    ((symbol) '("$+<=>^`|~"))  ; ASCII only
-    ((word) '(word+ any))
-    ((bog eog)
-     (error 'regexp "'bog' and 'eog' aren't supported"))
-    ((grapheme)
-     (error 'regexp "'grapheme' isn't supported"))
-    (else sym)))
+(define unsupported '(w/nocapture w/unicode bog eog grapheme))
 
-(define (translate-pair sre)
-  (let ((tlist (lambda (lis) (map translate-sre lis)))
-        (unsupported '(w/nocapture w/unicode)))
+;; The name is a bit of a lie. This doesn't check whether sym is in the
+;; SRE alphabet.
+(define (validate-symbol sym)
+  (if (memq sym unsupported)
+      (error 'regexp "unsupported SRE form" sym)
+      sym))
 
-    (pmatch sre
-      ((|\|| . ,ss)                      `(or ,@(tlist ss)))
-      ((optional . ,ss)                  `(? ,@(tlist ss)))
-      ((zero-or-more . ,ss)              `(* ,@(tlist ss)))
-      ((one-or-more . ,ss)               `(+ ,@(tlist ss)))
-      ((exactly ,n . ,ss)                `(= ,n ,@(tlist ss)))
-      ((at-least ,n . ,ss)               `(>= ,n ,@(tlist ss)))
-      ((repeated ,m ,n . ,ss)            `(** ,m ,n ,@(tlist ss)))
-      ((-> ,sym . ,ss)                   `(=> ,sym ,@(tlist ss)))
-      ((char-set ,s)                     `(,s))
-      ((w/ascii . ,ss)                   `(: ,@(tlist ss)))
-      ((non-greedy-optional . ,ss)       `(?? ,@(tlist ss)))
-      ((non-greedy-zero-or-more . ,ss)   `(*? ,@(tlist ss)))
-      ((non-greedy-repeated ,m ,n . ,ss) `(**? ,m ,n ,@(tlist ss)))
-      ((,a . ,d)
-       (if (memv a unsupported)
-           (error 'regexp "unsupported form" a)
-           (cons a (tlist d)))))))
-
-;; Translates a SRFI 115 SRE to an SRE compatible with CHICKEN's
-;; irregex library.
 (define (translate-sre sre)
-  (cond ((or (string? sre) (char? sre)) sre)
-        ((symbol? sre) (translate-char-set-or-boundary sre))
-        ((pair? sre) (translate-pair sre))
-        (else (error 'regexp "invalid SRE object" sre))))
+  (pmatch sre
+    (,x (guard (or (string? x) (char? x))) x)  ; literal
+    (symbol                            '("$+<=>^`|~"))  ; ASCII only
+    (word                              '(word+ any))
+    (,sym (guard (symbol? sym))        (validate-symbol sym))
+    ((|\|| . ,ss)                      `(or ,@(tlist ss)))
+    ((optional . ,ss)                  `(? ,@(tlist ss)))
+    ((zero-or-more . ,ss)              `(* ,@(tlist ss)))
+    ((one-or-more . ,ss)               `(+ ,@(tlist ss)))
+    ((exactly ,n . ,ss)                `(= ,n ,@(tlist ss)))
+    ((at-least ,n . ,ss)               `(>= ,n ,@(tlist ss)))
+    ((repeated ,m ,n . ,ss)            `(** ,m ,n ,@(tlist ss)))
+    ((-> ,sym . ,ss)                   `(=> ,sym ,@(tlist ss)))
+    ((char-set ,s)                     `(,s))
+    ((w/ascii . ,ss)                   `(: ,@(tlist ss)))
+    ((non-greedy-optional . ,ss)       `(?? ,@(tlist ss)))
+    ((non-greedy-zero-or-more . ,ss)   `(*? ,@(tlist ss)))
+    ((non-greedy-repeated ,m ,n . ,ss) `(**? ,m ,n ,@(tlist ss)))
+    ((,a . ,d) (guard (symbol? a))     `(,(validate-symbol a) ,@(tlist d)))
+    (else
+     (error 'regexp "invalid SRE" sre))))
+
+;; Convenient shorthand.
+(define (tlist lis) (map translate-sre lis))
 
 (define (regexp re)
   (sre->irregex (translate-sre re)))
