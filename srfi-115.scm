@@ -68,7 +68,7 @@
     (symbol                                '("$+<=>^`|~"))  ; ASCII only
     (word                                  '(word+ any))
     (,sym (guard (symbol? sym))            (validate-symbol sym))
-    ((|\|| . ,ss)                          `(or ,@(tlist ss)))
+    ((\| . ,ss)                            `(or ,@(tlist ss)))
     ((optional . ,ss)                      `(? ,@(tlist ss)))
     ((zero-or-more . ,ss)                  `(* ,@(tlist ss)))
     ((one-or-more . ,ss)                   `(+ ,@(tlist ss)))
