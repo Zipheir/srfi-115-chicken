@@ -10,11 +10,8 @@
         (chicken base)
         (chicken module)
         (only (srfi 14) char-set->string)
-        )
-
-(import (only (chicken irregex) sre->irregex))
-
-(import (rename (chicken irregex)
+        (only (chicken irregex) sre->irregex)
+        (rename (chicken irregex)
           (irregex?                  regexp?)
           (irregex-match             regexp-matches)
           (irregex-match?            regexp-matches?)
