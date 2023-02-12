@@ -36,6 +36,8 @@
 
 (export rx regexp-match->list)
 
+(include "pmatch.scm")
+
 (define-syntax rx
   (syntax-rules ()
     ((rx sre ...)
@@ -68,20 +70,24 @@
     (else sym)))
 
 (define (translate-pair sre)
-  (let* ((a (car sre))
-         (d (cdr sre))
-         (sres (map translate-sre d)))
-    (case a
-      ((|)            `(or ,@sres))
-      ((optional)     `(? ,@sres))  ; SRFI 115 long names
-      ((zero-or-more) `(* ,@sres))
-      ((one-or-more)  `(+ ,@sres))
-      ((exactly)      `(= ,@sres))
-      ((at-least)     `(>= ,@sres))
-      ((repeated)     `(** ,@sres))
-      ((->)           `(=> ,@sres)) ; different arrow!
-      ((char-set)     sres)
-      (else           (cons a sres))))))
+  (let ((tlist (lambda (lis) (map translate-sre lis)))
+        (unsupported '(w/nocapture w/unicode)))
+
+    (pmatch sre
+      ((|\|| . ,ss)           `(or ,@(tlist ss)))
+      ((optional . ,ss)       `(? ,@(tlist ss)))  ; SRFI 115 long names
+      ((zero-or-more . ,ss)   `(* ,@(tlist ss)))
+      ((one-or-more . ,ss)    `(+ ,@(tlist ss)))
+      ((exactly ,n . ,ss)     `(= ,n ,@(tlist ss)))
+      ((at-least ,n . ,ss)    `(>= ,n ,@(tlist ss)))
+      ((repeated ,m ,n . ,ss) `(** ,m ,n ,@(tlist ss)))
+      ((-> ,sym . ,ss)        `(=> ,sym ,@(tlist ss))) ; different arrow!
+      ((char-set ,s)          `(,s))
+      ((w/ascii . ,ss)        `(: ,@(tlist ss)))
+      ((,a . ,d)
+       (if (memv a unsupported)
+           (error 'regexp "unsupported form" a)
+           (cons a (tlist d)))))))
 
 ;; Translates a SRFI 115 SRE to an SRE compatible with CHICKEN's
 ;; irregex library.
@@ -90,5 +96,8 @@
         ((symbol? sre) (translate-char-set-or-boundary sre))
         ((pair? sre) (translate-pair sre))
         (else (error 'regexp "invalid SRE object" sre))))
+
+(define (regexp re)
+  (sre->irregex (translate-sre re)))
 
 )
