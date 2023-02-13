@@ -12,12 +12,11 @@
         (only (srfi 14) char-set->string)
         (only (chicken irregex) sre->irregex)
         (rename (only (chicken irregex)
-                  irregex? irregex-match-data? irregex-num-submatches
+                  irregex? irregex-match-data?
                   irregex-match-substring irregex-match-start-index
                   irregex-match-end-index irregex-match-num-submatches)
           (irregex?                  regexp?)
           (irregex-match-data?       regexp-match?)
-          (irregex-num-submatches    regexp-match-count)
           (irregex-match-substring   regexp-match-submatch)
           (irregex-match-start-index regexp-match-submatch-start)
           (irregex-match-end-index   regexp-match-submatch-end)
