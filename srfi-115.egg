@@ -1,5 +1,5 @@
 ((synopsis "SRFI 115: Scheme Regular Expressions")
- (version "0.0.1")
+ (version "0.1.0")
  (category data)
  (author "Alex Shinn")
  (license "MIT")
