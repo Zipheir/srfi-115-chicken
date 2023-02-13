@@ -34,7 +34,7 @@
 (define-syntax rx
   (syntax-rules ()
     ((rx sre ...)
-     (regexp (quote (: sre ...))))))
+     (regexp (quasiquote (: sre ...))))))
 
 (define (regexp-match->list rxm)
   (letrec*
