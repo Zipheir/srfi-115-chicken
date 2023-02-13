@@ -11,22 +11,21 @@
         (chicken module)
         (only (srfi 14) char-set->string)
         (only (chicken irregex) sre->irregex)
-        (rename (chicken irregex)
+        (rename (only (chicken irregex)
+                  irregex? irregex-match-data? irregex-num-submatches
+                  irregex-match-substring irregex-match-start-index
+                  irregex-match-end-index irregex-match-num-submatches)
           (irregex?                  regexp?)
-          (irregex-match             regexp-matches)
-          (irregex-match?            regexp-matches?)
-          (irregex-search            regexp-search)
           (irregex-match-data?       regexp-match?)
-          (irregex-fold              regexp-fold)
-          (irregex-extract           regexp-extract)
-          (irregex-split             regexp-split)
-          (irregex-replace           regexp-replace)
-          (irregex-replace/all       regexp-replace-all)
           (irregex-num-submatches    regexp-match-count)
           (irregex-match-substring   regexp-match-submatch)
           (irregex-match-start-index regexp-match-submatch-start)
           (irregex-match-end-index   regexp-match-submatch-end)
-          (irregex-match-num-submatches regexp-match-count)  ; ?
+          (irregex-match-num-submatches regexp-match-count)) ; ?
+        (only (chicken irregex)  ; shimmed procedures
+          irregex-match irregex-match? irregex-search
+          irregex-fold irregex-extract irregex-split irregex-replace
+          irregex-replace/all
           ))
 
 (include "pmatch.scm")
@@ -89,5 +88,40 @@
 
 (define (regexp re)
   (sre->irregex (translate-sre re)))
+
+;;;; Shimmed procedures
+
+;;; These procedures can accept both SREs and compiled regexps.
+;;; The SREs must be translated. We don't compile them since
+;;; uncompiled regexps are preferred for some uses.
+
+(define (translate-re re)
+  (if (regexp? re)
+      re
+      (translate-sre re)))
+
+(define (regexp-matches re str . opt)
+  (apply irregex-match (translate-re re) str opt))
+
+(define (regexp-matches? re str . opt)
+  (apply irregex-match? (translate-re re) str opt))
+
+(define (regexp-search re str . opt)
+  (apply irregex-search (translate-re re) str opt))
+
+(define (regexp-fold re kons knil str . opt)
+  (apply irregex-fold (translate-re re) kons knil str opt))
+
+(define (regexp-extract re str . opt)
+  (apply irregex-extract (translate-re re) str opt))
+
+(define (regexp-split re str . opt)
+  (apply irregex-split (translate-re re) str opt))
+
+(define (regexp-replace re str subst . opt)
+  (apply irregex-replace (translate-re re) str subst opt))
+
+(define (regexp-replace-all re str subst . opt)
+  (apply irregex-replace/all (translate-re re) str subst opt))
 
 )
