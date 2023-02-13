@@ -1,0 +1,12 @@
+((synopsis "SRFI 115: Scheme Regular Expressions")
+ (version "0.0.1")
+ (category data)
+ (author "Alex Shinn")
+ (license "MIT")
+ (maintainer "Wolfgang Corcoran-Mathe")
+ (dependencies srfi-14)
+ (test-dependencies test)
+ (components
+  (extension
+   srfi-115
+   (csc-options "-O0" "-d2"))))
