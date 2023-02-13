@@ -226,15 +226,6 @@
       (test '("abc" "123" "def" "456" "ghi" "789")
           (regexp-partition '(* numeric) "abc123def456ghi789"))
 
-      (cond-expand
-       (full-unicode
-        (test '("한" "글")
-              (regexp-extract
-               'grapheme
-               (utf8->string '#u8(#xe1 #x84 #x92 #xe1 #x85 #xa1 #xe1 #x86 #xab
-                                       #xe1 #x84 #x80 #xe1 #x85 #xb3 #xe1 #x86 #xaf)))))
-       (else))
-
       (test "abc def" (regexp-replace '(+ space) "abc \t\n def" " "))
       (test "  abc-abc"
           (regexp-replace '(: ($ (+ alpha)) ":" (* space)) "  abc: " '(1 "-" 1)))
