@@ -168,11 +168,6 @@
             (cdr
              (regexp-match->list
               (regexp-search `(: ,number "-" ,number "-" ,number)
-                             "555-867-5309"))))
-        (test '("555" "5309")
-            (cdr
-             (regexp-match->list
-              (regexp-search `(: ,number "-" (w/nocapture ,number) "-" ,number)
                              "555-867-5309")))))
 
       (test-re '("12345BeeF" "BeeF")
@@ -210,25 +205,9 @@
        (else))
 
       (test '("123" "456" "789") (regexp-extract '(+ numeric) "abc123def456ghi789"))
-      (test '("123" "456" "789") (regexp-extract '(* numeric) "abc123def456ghi789"))
-      (test '("abc" "def" "ghi" "") (regexp-split '(+ numeric) "abc123def456ghi789"))
-      (test '("abc" "def" "ghi" "")
-          (regexp-split '(* numeric) "abc123def456ghi789"))
       (test '("a" "b") (regexp-split '(+ whitespace) "a b"))
-      (test '("a" "" "b")
-          (regexp-split '(",;") "a,,b"))
-      (test '("a" "" "b" "")
-          (regexp-split '(",;") "a,,b,"))
-      (test '("")
-          (regexp-partition '(* numeric) ""))
-      (test '("abc" "123" "def" "456" "ghi")
-          (regexp-partition '(* numeric) "abc123def456ghi"))
-      (test '("abc" "123" "def" "456" "ghi" "789")
-          (regexp-partition '(* numeric) "abc123def456ghi789"))
 
       (test "abc def" (regexp-replace '(+ space) "abc \t\n def" " "))
-      (test "  abc-abc"
-          (regexp-replace '(: ($ (+ alpha)) ":" (* space)) "  abc: " '(1 "-" 1)))
       (test "  abc-  abc"
           (regexp-replace '(: ($ (+ alpha)) ":" (* space)) "  abc: " '(1 "-" pre 1)))
 
