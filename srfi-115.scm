@@ -11,7 +11,7 @@
         (chicken module)
         (only (srfi 14) char-set->string)
         (only (srfi 152) string-concatenate string-concatenate-reverse)
-        (only (chicken irregex) sre->irregex)
+        (only (chicken irregex) sre->irregex irregex-match-names)
         (rename (only (chicken irregex)
                   irregex? irregex-match-data?
                   irregex-match-substring irregex-match-start-index

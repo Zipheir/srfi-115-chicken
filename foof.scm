@@ -86,7 +86,7 @@
                    res)))
         (else
          (cond
-          ((assq (car ls) (regexp-match-names m))
+          ((assq (car ls) (irregex-match-names m))
            => (lambda (x) (lp (cons (cdr x) (cdr ls)) res)))
           (else
            (error "unknown match replacement" (car ls)))))))
