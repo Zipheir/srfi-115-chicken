@@ -4,7 +4,8 @@
    regexp-replace-all regexp-match? regexp-match-count
    regexp-match-submatch regexp-match-submatch-start
    regexp-match-submatch-end regexp-matches?
-   rx regexp-match->list translate-sre valid-sre?)
+   rx regexp-match->list translate-sre valid-sre?
+   regexp-partition)
 
 (import scheme
         (chicken base)
