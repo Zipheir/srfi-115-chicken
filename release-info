@@ -2,3 +2,4 @@
 (uri targz "https://github.com/Zipheir/{egg-name}-chicken/archive/{egg-release}.tar.gz")
 (release "0.3.0")
 (release "0.3.1")
+(release "0.3.2")
