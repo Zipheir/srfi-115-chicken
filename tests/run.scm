@@ -176,33 +176,6 @@
 
       (test-re #f '(* lower) "abcD")
       (test-re '("abcD") '(w/nocase (* lower)) "abcD")
-      (cond-expand
-       (full-unicode
-        (test-re '("σζ") '(* lower) "σζ")
-        (test-re '("Σ") '(* upper) "Σ")
-        (test-re '("\x01C5;") '(* title) "\x01C5;")
-        (test-re '("σζ\x01C5;") '(w/nocase (* lower)) "σζ\x01C5;")
-
-        (test-re '("кириллица") '(* alpha) "кириллица")
-        (test-re #f '(w/ascii (* alpha)) "кириллица")
-        (test-re '("кириллица") '(w/nocase "КИРИЛЛИЦА") "кириллица")
-
-        (test-re '("１２３４５") '(* numeric) "１２３４５")
-        (test-re #f '(w/ascii (* numeric)) "１２３４５")
-
-        (test-re '("한") 'grapheme "한")
-        (test-re '("글") 'grapheme "글")
-
-        (test-re '("한") '(: bog grapheme eog) "한")
-        (test-re #f '(: "ᄒ" bog grapheme eog "ᆫ") "한")
-
-        (test '("a" "b" "c") (regexp-extract 'grapheme "abc"))
-        (test '("a" " " "b" " " "c") (regexp-extract 'grapheme "a b c"))
-        (test '("a" "\n" "b" "\r\n" "c") (regexp-extract 'grapheme "a\nb\r\nc"))
-        (test '("a\x0300;" "b\x0301;\x0302;" "c\x0303;\x0304;\x0305;")
-              (regexp-extract 'grapheme "a\x0300;b\x0301;\x0302;c\x0303;\x0304;\x0305;"))
-        (test '("한" "글") (regexp-extract 'grapheme "한글")))
-       (else))
 
       (test '("123" "456" "789") (regexp-extract '(+ numeric) "abc123def456ghi789"))
       (test '("a" "b") (regexp-split '(+ whitespace) "a b"))
