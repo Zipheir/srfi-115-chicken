@@ -121,8 +121,19 @@
 (define (regexp-search re str . opt)
   (apply irregex-search (translate-re re) str opt))
 
+;; regexp-fold passes str to knil and finish along with the
+;; usual three.
 (define (regexp-fold re kons knil str . opt)
-  (apply irregex-fold (translate-re re) kons knil str opt))
+  (let-optionals opt ((finish (lambda (i m s a) a))
+                      (start 0)
+                      (end (string-length str)))
+    (irregex-fold (translate-re re)
+                  (lambda (i m acc) (kons i m str acc))
+                  knil
+                  str
+                  (lambda (i m acc) (finish i m str acc))
+                  start
+                  end)))
 
 (define (regexp-extract re str . opt)
   (apply irregex-extract (translate-re re) str opt))
