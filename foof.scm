@@ -1,12 +1,14 @@
 ;; Copyright (c) 2013-2016 Alex Shinn.  All rights reserved.
 ;; BSD-style license: http://synthcode.com/license.txt
 
+;; Edited by wcm 2023-02.
+
 ;; This file implements forms which either aren't included in
 ;; (chicken irregex) or differ greatly from their CHICKEN versions.
 
 (define (regexp-partition rx str . o)
-  (let ((start (if (pair? o) (car o) 0))
-        (end (if (and (pair? o) (pair? (cdr o))) (cadr o) (string-length str))))
+  (let-optionals o ((start 0)
+                    (end (string-length str)))
     (define (kons from md str a)
       (let ((i (regexp-match-submatch-start md 0))
             (j (regexp-match-submatch-end md 0)))
@@ -23,11 +25,9 @@
     (reverse (regexp-fold rx kons (cons start '()) str final start end))))
 
 (define (regexp-replace rx str subst . o)
-  (let* ((start (if (and (pair? o) (car o)) (car o) 0))
-         (o (if (pair? o) (cdr o) '()))
-         (end (if (and (pair? o) (car o)) (car o) (string-length str)))
-         (o (if (pair? o) (cdr o) '()))
-         (count (if (pair? o) (car o) 0)))
+  (let-optionals o ((start 0)
+                    (end (string-length str))
+                    (count 0))
     (let lp ((i start) (count count))
       (let ((m (regexp-search rx str i end)))
         (cond
@@ -43,9 +43,8 @@
              (list (substring str (regexp-match-submatch-end m 0) end)))))))))))
 
 (define (regexp-replace-all rx str subst . o)
-  (let* ((start (if (and (pair? o) (car o)) (car o) 0))
-         (o (if (pair? o) (cdr o) '()))
-         (end (if (and (pair? o) (car o)) (car o) (string-length str))))
+  (let-optionals o ((start 0)
+                    (end (string-length str)))
     (regexp-fold
      rx
      (lambda (i m str acc)
