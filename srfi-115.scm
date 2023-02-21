@@ -4,10 +4,11 @@
    regexp-replace-all regexp-match? regexp-match-count
    regexp-match-submatch regexp-match-submatch-start
    regexp-match-submatch-end regexp-matches?
-   rx regexp-match->list translate-sre)
+   rx regexp-match->list translate-sre valid-sre?)
 
 (import scheme
         (chicken base)
+        (chicken condition)
         (chicken module)
         (only (srfi 14) char-set->string)
         (only (srfi 152) string-concatenate string-concatenate-reverse)
@@ -46,6 +47,12 @@
            (cons (regexp-match-submatch rxm k)
                  (build (+ k 1)))))))
     (build 0)))
+
+;; This is a bit of a shotgun. (chicken irregex) needs to be more
+;; specific with its exceptions.
+(define (valid-sre? x)
+  (condition-case (begin (regexp x) #t)
+    (junk () #f)))
 
 (define (char-set->sre cset)
   (list (char-set->string cset)))
