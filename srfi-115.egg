@@ -1,6 +1,6 @@
 ((synopsis "SRFI 115: Scheme Regular Expressions")
  (version "0.2.0")
- (category data)
+ (category parsing)
  (author "Alex Shinn")
  (license "MIT")
  (maintainer "Wolfgang Corcoran-Mathe")
