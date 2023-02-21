@@ -26,8 +26,10 @@
 
 (define (regexp-replace rx str subst . o)
   (let-optionals o ((start 0)
-                    (end (string-length str))
+                    (maybe-end (string-length str))
                     (count 0))
+    ;; end may be #f
+    (let ((end (or maybe-end (string-length str))))
     (let lp ((i start) (count count))
       (let ((m (regexp-search rx str i end)))
         (cond
@@ -40,11 +42,13 @@
             (substring str start (regexp-match-submatch-start m 0))
             (append
              (reverse (regexp-apply-match m str subst start end))
-             (list (substring str (regexp-match-submatch-end m 0) end)))))))))))
+             (list (substring str (regexp-match-submatch-end m 0) end))))))))))))
 
 (define (regexp-replace-all rx str subst . o)
   (let-optionals o ((start 0)
-                    (end (string-length str)))
+                    (maybe-end (string-length str)))
+    ;; end may be #f
+    (let ((end (or maybe-end (string-length str))))
     (regexp-fold
      rx
      (lambda (i m str acc)
@@ -61,7 +65,7 @@
           (if (>= i end)
               acc
               (cons (substring str i end) acc)))))
-     start end)))
+     start end))))
 
 (define (regexp-apply-match m str ls start end)
   (let lp ((ls ls) (res '()))
