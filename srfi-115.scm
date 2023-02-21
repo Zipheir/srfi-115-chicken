@@ -123,10 +123,4 @@
 (define (regexp-split re str . opt)
   (apply irregex-split (translate-re re) str opt))
 
-(define (regexp-replace re str subst . opt)
-  (apply irregex-replace (translate-re re) str subst opt))
-
-(define (regexp-replace-all re str subst . opt)
-  (apply irregex-replace/all (translate-re re) str subst opt))
-
 )
