@@ -206,6 +206,11 @@
 
       (test '("123" "456" "789") (regexp-extract '(+ numeric) "abc123def456ghi789"))
       (test '("a" "b") (regexp-split '(+ whitespace) "a b"))
+      (test '("") (regexp-partition '(* numeric) ""))
+      (test '("abc" "123" "def" "456" "ghi")
+            (regexp-partition '(* numeric) "abc123def456ghi"))
+      (test '("abc" "123" "def" "456" "ghi" "789")
+            (regexp-partition '(* numeric) "abc123def456ghi789"))
 
       (test "abc def" (regexp-replace '(+ space) "abc \t\n def" " "))
       (test "  abc-  abc"
