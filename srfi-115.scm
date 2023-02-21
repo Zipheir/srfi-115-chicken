@@ -121,8 +121,6 @@
 (define (regexp-search re str . opt)
   (apply irregex-search (translate-re re) str opt))
 
-;; regexp-fold passes str to knil and finish along with the
-;; usual three.
 (define (regexp-fold re kons knil str . opt)
   (let-optionals opt ((finish (lambda (i m s a) a))
                       (start 0)
@@ -131,7 +129,7 @@
                   (lambda (i m acc) (kons i m str acc))
                   knil
                   str
-                  (lambda (i m acc) (finish i m str acc))
+                  (lambda (i acc) (finish i #f str acc))
                   start
                   end)))
 
