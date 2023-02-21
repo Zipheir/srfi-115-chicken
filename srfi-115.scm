@@ -10,6 +10,7 @@
         (chicken base)
         (chicken module)
         (only (srfi 14) char-set->string)
+        (only (srfi 152) string-concatenate string-concatenate-reverse)
         (only (chicken irregex) sre->irregex)
         (rename (only (chicken irregex)
                   irregex? irregex-match-data?
@@ -28,6 +29,7 @@
           ))
 
 (include "pmatch.scm")
+(include "foof.scm")
 
 (define-syntax rx
   (syntax-rules ()
